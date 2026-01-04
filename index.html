@@ -1,722 +1,1784 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Green Network - Protect Earth</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>S型Canvas时间线</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            overflow: auto; /* 允许滚动 */
+            background-color: #f0f2f5;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        :root {
-            --primary: #2e7d32;
-            --secondary: #4caf50;
-            --accent: #8bc34a;
-            --light: #e8f5e9;
-            --dark: #1b5e20;
-            --text: #333333;
-            --white: #ffffff;
-        }
-
-        body {
-            background-color: var(--light);
-            color: var(--text);
-            line-height: 1.6;
-        }
-
-        header {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: var(--white);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-
-        .logo i {
-            font-size: 2rem;
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-        }
-
-        nav ul li {
-            margin-left: 2rem;
-        }
-
-        nav ul li a {
-            color: var(--white);
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            padding: 0.5rem 0;
-            position: relative;
-        }
-
-        nav ul li a:hover {
-            color: var(--accent);
-        }
-
-        nav ul li a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: var(--accent);
-            transition: width 0.3s ease;
-        }
-
-        nav ul li a:hover::after {
-            width: 100%;
-        }
-
-        .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2073&q=80');
-            background-size: cover;
-            background-position: center;
-            height: 80vh;
-            display: flex;
-            align-items: center;
-            text-align: center;
-            color: var(--white);
-        }
-
-        .hero-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-        }
-
-        .btn {
-            display: inline-block;
-            background-color: var(--accent);
-            color: var(--white);
-            padding: 0.8rem 2rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn:hover {
-            background-color: var(--primary);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        section {
-            padding: 5rem 0;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .section-title h2 {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-            position: relative;
-            display: inline-block;
-        }
-
-        .section-title h2::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background-color: var(--accent);
-            border-radius: 2px;
-        }
-
-        .section-title p {
-            color: var(--text);
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .about-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
-        }
-
-        .about-img {
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .about-img img {
-            width: 100%;
-            height: auto;
+        canvas {
             display: block;
-            transition: transform 0.5s ease;
+            cursor: default;
         }
-
-        .about-img:hover img {
-            transform: scale(1.05);
-        }
-
-        .about-text h3 {
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            color: var(--dark);
-        }
-
-        .about-text p {
-            margin-bottom: 1.5rem;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 2rem 1rem;
-            background-color: var(--white);
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .stat-item:hover {
-            transform: translateY(-10px);
-        }
-
-        .stat-item i {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-
-        .stat-item h3 {
-            font-size: 2.5rem;
-            color: var(--dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-item p {
-            color: var(--text);
-        }
-
-        .initiatives {
-            background-color: var(--white);
-        }
-
-        .initiatives-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-        }
-
-        .initiative-card {
-            background-color: var(--light);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .initiative-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .initiative-img {
-            height: 200px;
-            overflow: hidden;
-        }
-
-        .initiative-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .initiative-card:hover .initiative-img img {
-            transform: scale(1.1);
-        }
-
-        .initiative-content {
-            padding: 1.5rem;
-        }
-
-        .initiative-content h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--dark);
-        }
-
-        .initiative-content p {
-            margin-bottom: 1.5rem;
-        }
-
-        .cta {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: var(--white);
-            text-align: center;
-            padding: 5rem 0;
-        }
-
-        .cta h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .cta p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .cta .btn {
-            background-color: var(--white);
-            color: var(--primary);
-        }
-
-        .cta .btn:hover {
-            background-color: var(--accent);
-            color: var(--white);
-        }
-
-        footer {
-            background-color: var(--dark);
-            color: var(--white);
-            padding: 3rem 0 1rem;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-column h3 {
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
+        #canvas-container {
             position: relative;
-            padding-bottom: 10px;
+            overflow: visible; /* 允许内容溢出 */
+            width: 100%;
+            height: 100vh;
         }
-
-        .footer-column h3::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 40px;
-            height: 2px;
-            background-color: var(--accent);
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
-
-        .footer-column p {
-            margin-bottom: 1rem;
+        .glass-button {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            transition: all 0.2s ease;
         }
-
-        .footer-links {
-            list-style: none;
+        .glass-button:hover {
+            transform: translateY(-1px);
+            background: #fff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-
-        .footer-links li {
-            margin-bottom: 0.8rem;
+        .glass-button:active {
+            transform: translateY(0);
         }
-
-        .footer-links li a {
-            color: var(--light);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .footer-links li a:hover {
-            color: var(--accent);
-            padding-left: 5px;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .social-links a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            color: var(--white);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .social-links a:hover {
-            background-color: var(--accent);
-            transform: translateY(-5px);
-        }
-
-        .copyright {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .mobile-menu {
-            display: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        @media (max-width: 992px) {
-            .about-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .initiatives-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .footer-content {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .hero p {
-                font-size: 1.1rem;
-            }
-            
-            nav ul {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background-color: var(--primary);
-                flex-direction: column;
-                padding: 1rem 0;
-                text-align: center;
-                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-            }
-            
-            nav ul.active {
-                display: flex;
-            }
-            
-            nav ul li {
-                margin: 0;
-                padding: 0.8rem 0;
-            }
-            
-            .mobile-menu {
-                display: block;
-            }
-            
-            .initiatives-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .footer-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Animation for stats counter */
-        .counter {
-            transition: all 0.5s ease;
+        /* 隐藏 datetime-local 的默认图标 (可选, 保持简洁) */
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            /* (可以根据需要设置样式，或保持默认) */
+            /* background: none;*/
         }
     </style>
 </head>
-<body>
-    <!-- Header -->
-    <header>
-        <div class="container nav-container">
-            <div class="logo">
-                <i class="fas fa-seedling"></i>
-                <span>Green Network</span>
-            </div>
-            <nav>
-                <div class="mobile-menu">
-                    <i class="fas fa-bars"></i>
-                </div>
-                <ul>
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#initiatives">Initiatives</a></li>
-                    <li><a href="#get-involved">Get Involved</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+<body class="w-screen h-screen m-0 p-0">
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="container hero-content">
-            <h1>Protect Our Planet, Preserve Our Future</h1>
-            <p>Join the global movement to create a sustainable world through conservation, education, and community action.</p>
-            <a href="#get-involved" class="btn">Join Our Network</a>
-        </div>
-    </section>
+    <!-- Canvas 容器 -->
+    <div id="canvas-container" class="w-full h-full">
+        <canvas id="timelineCanvas"></canvas>
+    </div>
 
-    <!-- About Section -->
-    <section id="about">
-        <div class="container">
-            <div class="section-title">
-                <h2>About Green Network</h2>
-                <p>We are a global community dedicated to environmental protection and sustainable development.</p>
-            </div>
-            <div class="about-content">
-                <div class="about-img">
-                    <img src="https://images.unsplash.com/photo-1507591064344-4c6ce005b128?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Team planting trees">
-                </div>
-                <div class="about-text">
-                    <h3>Our Mission</h3>
-                    <p>Green Network is committed to creating a sustainable future by protecting natural ecosystems, promoting renewable energy, and empowering communities to take environmental action.</p>
-                    <p>Founded in 2010, we've grown from a small grassroots organization to an international network with over 50,000 members across 120 countries.</p>
-                    <p>Our approach combines scientific research, community engagement, and policy advocacy to address the most pressing environmental challenges of our time.</p>
-                    <a href="#" class="btn">Learn More</a>
-                </div>
-            </div>
-            <div class="stats">
-                <div class="stat-item">
-                    <i class="fas fa-tree"></i>
-                    <h3 class="counter" data-target="2500000">0</h3>
-                    <p>Trees Planted</p>
-                </div>
-                <div class="stat-item">
-                    <i class="fas fa-users"></i>
-                    <h3 class="counter" data-target="50000">0</h3>
-                    <p>Active Members</p>
-                </div>
-                <div class="stat-item">
-                    <i class="fas fa-globe-americas"></i>
-                    <h3 class="counter" data-target="120">0</h3>
-                    <p>Countries Reached</p>
-                </div>
-                <div class="stat-item">
-                    <i class="fas fa-recycle"></i>
-                    <h3 class="counter" data-target="1500">0</h3>
-                    <p>Cleanup Projects</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- 右上角按钮: 保存/读取 -->
+    <div class="glass-panel absolute top-4 right-4 flex gap-2 z-10">
+        <button id="saveButton" class="glass-button px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+            保存
+        </button>
+        <label for="loadInput" class="glass-button cursor-pointer px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-300">
+            读取
+        </label>
+        <input type="file" id="loadInput" class="hidden" accept=".txt">
+    </div>
 
-    <!-- Initiatives Section -->
-    <section class="initiatives" id="initiatives">
-        <div class="container">
-            <div class="section-title">
-                <h2>Our Initiatives</h2>
-                <p>Discover the key programs and projects we're implementing to protect our planet.</p>
-            </div>
-            <div class="initiatives-grid">
-                <div class="initiative-card">
-                    <div class="initiative-img">
-                        <img src="https://dialogue.earth/content/uploads/2021/04/lessons-from-the-rush-to-reforest-china-dialogue-2400x1599.jpg" alt="Reforestation">
-                    </div>
-                    <div class="initiative-content">
-                        <h3>Global Reforestation</h3>
-                        <p>Planting millions of trees worldwide to restore ecosystems, combat climate change, and protect biodiversity.</p>
-                        <a href="#" class="btn">Learn More</a>
-                    </div>
-                </div>
-                <div class="initiative-card">
-                    <div class="initiative-img">
-                        <img src="https://images.unsplash.com/photo-1621451537084-482c73073a0f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" alt="Ocean Conservation">
-                    </div>
-                    <div class="initiative-content">
-                        <h3>Ocean Conservation</h3>
-                        <p>Protecting marine ecosystems, reducing plastic pollution, and promoting sustainable fishing practices.</p>
-                        <a href="#" class="btn">Learn More</a>
-                    </div>
-                </div>
-                <div class="initiative-card">
-                    <div class="initiative-img">
-                        <img src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80" alt="Renewable Energy">
-                    </div>
-                    <div class="initiative-content">
-                        <h3>Renewable Energy</h3>
-                        <p>Promoting solar, wind, and other clean energy sources to reduce dependence on fossil fuels.</p>
-                        <a href="#" class="btn">Learn More</a>
-                    </div>
-                </div>
-            </div>
+    <!-- 左下角按钮: 缩放 -->
+    <div class="absolute bottom-6 left-6 flex gap-2 z-20">
+        <div class="glass-panel rounded-xl p-1 shadow-lg flex">
+            <button id="zoomInButton" id="zoomInBtn" class="w-10 h-10 flex items-center justify-center text-xl font-bold text-gray-700 hover:bg-white/50 rounded-lg transition-colors" title="放大">+</button>
+            <div class="w-[1px] bg-gray-300/50"></div>
+            <button id="zoomOutButton" id="zoomOutBtn" class="w-10 h-10 flex items-center justify-center text-xl font-bold text-gray-700 hover:bg-white/50 rounded-lg transition-colors" title="缩小">-</button>
         </div>
-    </section>
+    </div>
 
-    <!-- CTA Section -->
-    <section class="cta" id="get-involved">
-        <div class="container">
-            <h2>Join Our Global Movement</h2>
-            <p>Together, we can create a sustainable future for generations to come. Every action counts, no matter how small.</p>
-            <a href="#" class="btn">Become a Member</a>
+    <!-- 事件编辑模态框 (默认隐藏) -->
+    <div id="eventModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity opacity-0 pointer-events-none duration-300 z-50">
+        <div class="modal-content glass-panel rounded-xl shadow-2xl w-full max-w-md p-8 transform scale-100 transition-all duration-300">
+            <h3 id="modalTitle" class="text-2xl font-bold mb-6 text-gray-800">编辑事件</h3>
+            <form id="eventForm">
+                <div class="mb-4">
+                    <label for="eventDate" class="block text-sm font-medium text-gray-700 mb-1">日期和时间</label>
+                    <!-- 使用 datetime-local -->
+                    <input type="datetime-local" id="eventDate" class="w-full px-4 py-2.5 bg-white/50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all hover:border-blue-400" step="1" required>
+                </div>
+                <!-- 优先级改为 Select 0-5 -->
+                <div class="mb-4">
+                    <label for="eventPriority" class="block text-sm font-medium text-gray-700 mb-1">优先级 (0-5, 0最高)</label>
+                    <select id="eventPriority" class="w-full flex-1 px-4 py-2.5 bg-white/50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer transition-all hover:border-blue-400 font-bold">
+                        <option value="0" data-color="#FF0000" style="color: #FF0000;">🔥 0 - 紧急</option>
+                        <option value="1" data-color="#FF8C00" style="color: #FF8C00;">⚡ 1 - 较高</option>
+                        <option value="2" data-color="#FFD700" style="color: #FFD700;">⭐ 2 - 中等</option>
+                        <option value="3" data-color="#00BFFF" style="color: #00BFFF;">🔹 3 - 一般</option>
+                        <option value="4" data-color="#9370DB" style="color: #9370DB;">🔸 4 - 较低</option>
+                        <option value="5" data-color="#808080" style="color: #808080;">💤 5 - 待定</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="eventDescription" class="block text-sm font-medium text-gray-700 mb-1">描述</label>
+                    <input type="text" id="eventDescription" class="w-full px-4 py-2.5 bg-white/50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all hover:border-blue-400" required>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="cancelButton" class="px-5 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors font-medium">
+                        取消
+                    </button>
+                    <button type="submit" id="saveEventButton" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium">
+                        保存
+                    </button>
+                </div>
+            </form>
         </div>
-    </section>
+    </div>
 
-    <!-- Footer -->
-    <footer id="contact">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>Green Network</h3>
-                    <p>We are dedicated to protecting our planet through collaborative action, education, and sustainable solutions.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <div class="footer-column">
-                    <h3>Quick Links</h3>
-                    <ul class="footer-links">
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#about">About Us</a></li>
-                        <li><a href="#initiatives">Initiatives</a></li>
-                        <li><a href="#get-involved">Get Involved</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Our Programs</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Reforestation</a></li>
-                        <li><a href="#">Ocean Cleanup</a></li>
-                        <li><a href="#">Wildlife Protection</a></li>
-                        <li><a href="#">Climate Education</a></li>
-                        <li><a href="#">Sustainable Agriculture</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Contact Us</h3>
-                    <p><i class="fas fa-map-marker-alt"></i> Copper Creek Drive, New York</p>
-                    <p><i class="fas fa-phone"></i> +1 (312) 171-0771</p>
-                    <p><i class="fas fa-envelope"></i> support@greennetwork.org</p>
-                </div>
-            </div>
-            <div class="copyright">
-                <p>&copy; 2025 Green Network. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
 
     <script>
-        // Mobile Menu Toggle
-        document.querySelector('.mobile-menu').addEventListener('click', function() {
-            document.querySelector('nav ul').classList.toggle('active');
-        });
+        /*
+         * ========================================================================
+         * S型CANVAS时间线
+         * ========================================================================
+         * 主要功能总结如下：
+         *  1. 核心功能与特点
+         *     S 型路径布局：时间线不再是单纯的直线，而是根据窗口大小自动计算出的 S 型蜿蜒路径（包含直线段和圆弧转角），有效地利用了垂直屏幕空间。
+         *     完全响应式：监听窗口 resize 事件，实时重新计算路径和节点位置，保证在不同屏幕尺寸下显示正常。
+         *     智能防碰撞布局：
+         *        系统会根据事件的时间戳计算其在路径上的精确位置。
+         *        具有碰撞检测机制（processEventsLayout），如果文字标签发生重叠，会自动调整标签位置（上下交替）。
+         *        如果空间依然不足，低优先级的事件会缩略显示为一个小圆点（Dot模式），高优先级事件显示完整详情（Full模式）。
+         *     平滑动画：
+         *        包含动画循环（requestAnimationFrame），用于处理缩放和事件显隐的过渡效果（透明度和大小的 Lerp 插值动画）。
+         *  2. 交互能力
+         *     事件 CRUD（增删改查）：
+         *        查看：鼠标悬停在节点上可高亮显示详情。
+         *        编辑：点击已有事件会弹出模态框（Modal），可修改日期、优先级（0-5，0最高）和描述。
+         *        新增：点击路径上的空白处，可在该时间点添加新事件。
+         *        删除：悬停在事件上时会出现删除按钮，点击即可删除。
+         *     视图控制：
+         *        缩放：提供“+”和“-”按钮，通过改变路径总长度（currentTargetLength）来拉伸或压缩时间轴。
+         *        当前时间标记：自动计算并绘制“今天”的标记位置。
+         *        数据持久化：
+         *           保存：可以将当前所有事件导出为 .txt 文本文件。
+         *           读取：可以上传之前保存的 .txt 文件恢复时间线数据。
+         *  3. 技术实现细节
+         *     依赖库：仅引入了 Tailwind CSS 用于 UI 样式（按钮、模态框），核心逻辑全部为原生 JavaScript，无其他框架依赖。
+         *     绘图逻辑：
+         *        将路径拆分为“直线”和“圆弧”两种片段（Segments）。
+         *        通过积分/百分比计算，将时间（Time）映射到路径长度（Distance），再通过几何计算得出 Canvas 上的 (x, y) 坐标和切线角度。
+         *     数据结构：
+         *        事件数据包含时间戳、优先级、描述、坐标以及用于动画的透明度/缩放状态。
+         */
 
-        // Counter Animation
-        function animateCounters() {
-            const counters = document.querySelectorAll('.counter');
-            const speed = 200; // The lower the slower
-            
-            counters.forEach(counter => {
-                const target = +counter.getAttribute('data-target');
-                const count = +counter.innerText;
-                
-                const inc = target / speed;
-                
-                if(count < target) {
-                    counter.innerText = Math.ceil(count + inc);
-                    setTimeout(animateCounters, 1);
-                } else {
-                    counter.innerText = target;
+         const DEBUG = {
+            ENABLED: true,
+            SHOW_FPS: true,
+            SHOW_COLLISION_BOXES: true
+        };
+
+        // --- 配置常量 ---
+        const CONFIG = {
+            // 绘图常量
+            MARGIN: 60,
+            TOP_MARGIN: 100,
+            BOTTOM_MARGIN: 100,
+            BASE_ROW_HEIGHT: 160,
+            LINE_WIDTH: 6,
+            LINE_COLOR: '#4a90e2',
+            NODE_RADIUS: 8,
+            NODE_COLOR: '#333',
+            TEXT_COLOR: '#333',
+            TEXT_COLOR_LIGHT: '#777',
+            FONT_SIZE: 14,
+            FONT_SIZE_SMALL: 10,
+            DELETE_BUTTON_RADIUS: 8,
+            DELETE_BUTTON_COLOR: 'rgba(255, 0, 0, 0.7)',
+            HOVER_DELETE_BUTTON_COLOR: 'rgba(255, 0, 0, 1)',
+
+            // 动画配置
+            ANIMATION_SPEED: 0.15,
+            OPACITY_THRESHOLD: 0.01,
+            SCALE_THRESHOLD: 0.01,
+
+            // 缩放配置
+            ZOOM_FACTOR: 1.1,
+
+            // 交互配置
+            HOVER_DELAY: 20,
+            DRAG_SPEED: 0.5, // 拖拽速度系数
+
+            // 箭头配置
+            ARROW_HEAD_LENGTH: 20,
+            ARROW_HEAD_WIDTH: 15,
+            ARROW_INDENT: 5,
+
+            // 今天标记
+            TODAY_MARKER_LENGTH: 50,
+
+            // 颜色方案
+            MONTH_COLORS: [
+                '#64B5F6', '#FF80AB', '#4CAF50', '#8E24AA', '#FFF176', '#2196F3',
+                '#FF7043', '#66BB6A', '#FF9800', '#795548', '#FFC107', '#E53935'
+            ],
+
+            PRIORITY_COLORS: [
+                '#FF0000', // 0 - 紧急 (红色)
+                '#FF8C00', // 1 - 高 (橙色)
+                '#FFD700', // 2 - 中 (金色)
+                '#00BFFF', // 3 - 一般 (蓝色)
+                '#9370DB', // 4 - 低 (紫色)
+                '#808080'  // 5 - 待定 (灰色)
+            ],
+
+            PRIORITY_LABELS: [
+                '🔥 紧急',
+                '⚡ 较高',
+                '⭐ 中等',
+                '🔹 一般',
+                '🔸 较低',
+                '💤 待定'
+            ]
+        };
+
+        const canvas = document.getElementById('timelineCanvas');
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+
+        // --- 核心数据 ---
+        let events = [];
+        let pathSegments = [];
+        let totalPathLength = 0;
+        let minTime = 0;
+        let maxTime = 0;
+        let zoomLevel = 5;
+        let currentTargetLength = 0;
+        let resizeTimer;
+
+        // 动画相关
+        let animationId;
+        let isAnimating = true; // 标记是否需要持续渲染
+
+        // 滚动和拖拽相关
+        let isDragging = false;
+        let dragStartY = 0;
+        let scrollTopStart = 0;
+        let scrollY = 0; // 当前滚动位置
+
+        // --- 性能优化：添加缓存和标记 ---
+        let needsLayoutUpdate = true; // 标记是否需要重新计算布局
+        let cachedEventLayouts = new Map(); // 缓存事件布局
+
+        // --- 交互状态 ---
+        let hoveringEvent = null;
+        let hoveringDeleteButton = false;
+        let hoverTimer = null;
+
+        let editingEvent = null;
+        let currentMousePos = { x: 0, y: 0 };
+        let editingType = 'edit';
+        let hoverTarget = null;
+
+        let frameCount = 0;
+        let lastTime = performance.now();
+        let fps = 0;
+
+        // --- DOM 元素 ---
+        const saveButton = document.getElementById('saveButton');
+        const loadInput = document.getElementById('loadInput');
+        const zoomInButton = document.getElementById('zoomInButton');
+        const zoomOutButton = document.getElementById('zoomOutButton');
+        const eventModal = document.getElementById('eventModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const eventForm = document.getElementById('eventForm');
+        const eventDateInput = document.getElementById('eventDate');
+        const eventPriorityInput = document.getElementById('eventPriority');
+        const eventDescriptionInput = document.getElementById('eventDescription');
+        const cancelButton = document.getElementById('cancelButton');
+        const saveEventButton = document.getElementById('saveEventButton');
+
+
+        // ========================================================================
+        // 核心功能: 初始化和重绘
+        // ========================================================================
+
+        function init() {
+            // 首先设置初始scrollY为0，确保时间轴在视口顶部
+            scrollY = 0;
+
+            resizeCanvas(true);
+
+            const defaultData = `
+2025-01-01 0 项目启动
+2025-02-15 1 需求分析完成
+2025-03-01T10:00:00 5 V1.0 发布
+2025-03-10 2 收集用户反馈
+2025-05-20T14:30:00 3 团队建设
+2025-07-04 1 重要里程碑
+2025-09-01 5 新功能A
+2025-10-15 5 新功能B
+2025-11-11 5 新功能C
+2026-01-01 0 V2.0 规划
+`;
+            parseAndLoadEvents(defaultData);
+
+            window.addEventListener('resize', resizeCanvas);
+
+            zoomInButton.addEventListener('click', () => {
+                setMostLikeTargetLength('+');
+                startAnimation(); // 触发动画
+            });
+            zoomOutButton.addEventListener('click', () => {
+                setMostLikeTargetLength('-');
+                startAnimation(); // 触发动画
+            });
+
+            saveButton.addEventListener('click', saveEventsToFile);
+            loadInput.addEventListener('change', loadEventsFromFile);
+
+            canvas.addEventListener('mousemove', handleCanvasMouseMove);
+            canvas.addEventListener('mousedown', handleCanvasMouseDown);
+            canvas.addEventListener('mouseup', handleCanvasMouseUp);
+            canvas.addEventListener('mouseleave', handleCanvasMouseLeave);
+            canvas.addEventListener('wheel', handleCanvasWheel);
+            canvas.addEventListener('click', handleCanvasClick);
+            window.addEventListener('mousemove', handleWindowMouseMove);
+
+            eventForm.addEventListener('submit', handleSaveEvent);
+            cancelButton.addEventListener('click', closeModal);
+
+            // 优先级选择器颜色同步
+            eventPriorityInput.addEventListener('change', (e) => {
+                const selectedOption = e.target.options[e.target.selectedIndex];
+                const color = selectedOption.dataset.color;
+                if (color) {
+                    e.target.style.color = color;
                 }
             });
+
+            // 启动动画循环
+            animationLoop();
+
+            // 确保初始绘制
+            startAnimation();
         }
 
-        // Initialize counters when page loads
-        window.addEventListener('load', animateCounters);
+        function setMostLikeTargetLength(change = '=') {
+            const radius = CONFIG.BASE_ROW_HEIGHT / 2;
+            const lineLength = canvas.clientWidth - CONFIG.MARGIN * 2 - radius * 2;
+            const arcLength = Math.PI * radius;
+            const segmentLength = lineLength + arcLength;
 
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                if(targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if(targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                    
-                    document.querySelector('nav ul').classList.remove('active');
+            // 初始化逻辑
+            if (currentTargetLength === 0) {
+                currentTargetLength = lineLength * 2 + arcLength;
+                return;
+            }
+
+            // 根据当前长度决定采用哪种缩放策略
+            if (currentTargetLength > lineLength) {
+                // 基于完整段的缩放
+                let minDiff = Infinity;
+                let bestLength = 0;
+
+                // 计算当前最接近的长度
+                let n = 0
+                let candidateLength;
+                do {
+                    candidateLength = lineLength + n * segmentLength;
+                    const diff = Math.abs(currentTargetLength - candidateLength);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        bestLength = candidateLength;
+                    }
+                    n++;
+                } while (candidateLength <= currentTargetLength);
+
+                currentTargetLength = bestLength;
+
+                if (change === '+') {
+                    currentTargetLength += segmentLength;
+                } else if (change === '-') {
+                    if (currentTargetLength === lineLength) {
+                        currentTargetLength = lineLength / CONFIG.ZOOM_FACTOR;
+                    } else {
+                        currentTargetLength -= segmentLength;
+                    }
+                }
+            } else {
+                // 基于比例的缩放（适用于较小的长度）
+                let minDiff = Infinity;
+                let bestLength = 0;
+
+                let candidateLength = lineLength;
+                while (candidateLength > lineLength * 0.5) {
+                    let diff = Math.abs(currentTargetLength - candidateLength);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        bestLength = candidateLength;
+                    }
+                    candidateLength /= CONFIG.ZOOM_FACTOR;
+                }
+
+                currentTargetLength = bestLength;
+
+                if (change === '+') {
+                    if (currentTargetLength === lineLength) {
+                        currentTargetLength += segmentLength;
+                    } else {
+                        currentTargetLength *= CONFIG.ZOOM_FACTOR;
+                    }
+                } else if (change === '-') {
+                    currentTargetLength /= CONFIG.ZOOM_FACTOR;
+                    if (currentTargetLength < lineLength * 0.5) {
+                        // 确保长度至少为线段长度的一半
+                        currentTargetLength *= CONFIG.ZOOM_FACTOR;
+                    }
+                }
+            }
+        }
+
+        function createEventObject(id, dateStr, timestamp, priority, description) {
+            return {
+                id: id,
+                dateStr: dateStr,
+                timestamp: timestamp,
+                priority: priority,
+                description: description,
+                x: 0,
+                y: 0,
+                bboxes: {},
+                displayMode: 'hidden',
+                deleteButtonPos: null,
+                segmentType: 'line',
+                animState: {
+                    dot: {
+                        opacity: 0,
+                        scale: 0
+                    },
+                    panel: {
+                        opacity: 0,
+                        scale: 0
+                    },
+                    deleteBtn: {
+                        opacity: 0,
+                        scale: 0
+                    }
+                }
+            };
+        }
+
+        function resizeCanvas(initialize = false) {
+            if (resizeTimer) {
+                clearTimeout(resizeTimer);
+            }
+
+            let doOnResize = () => {
+                const w = window.innerWidth;
+                // 计算需要的画布高度以容纳所有路径段
+                let neededHeight = window.innerHeight;
+                if (pathSegments.length > 0) {
+                    const lastSegment = pathSegments[pathSegments.length - 1];
+                    // 确保画布足够高以显示所有内容
+                    neededHeight = Math.max(neededHeight, lastSegment.y1 + CONFIG.BASE_ROW_HEIGHT);
+                } else {
+                    // 如果还没有路径段，则默认高度为2
+                    neededHeight = Math.max(neededHeight, 2 * CONFIG.BASE_ROW_HEIGHT);
+                }
+
+                canvas.width = w * dpr;
+                canvas.height = neededHeight * dpr;
+                canvas.style.width = `${w}px`;
+                canvas.style.height = `${neededHeight}px`;
+                ctx.scale(dpr, dpr);
+
+                setMostLikeTargetLength();
+
+                // 标记需要更新布局而不是立即计算
+                needsLayoutUpdate = true;
+                startAnimation(); // 只要resize就触发动画以防万一
+            };
+
+            if (initialize) {
+                doOnResize();
+            } else {
+                resizeTimer = setTimeout(doOnResize, 100); // 100ms 防抖动
+            }
+        }
+
+        // 触发动画更新
+        function startAnimation() {
+            isAnimating = true;
+            needsLayoutUpdate = true; // 标记需要更新布局
+        }
+
+        function animationLoop() {
+            const now = performance.now();
+            frameCount++;
+            if (now - lastTime >= 1000) {
+                fps = Math.round((frameCount * 1000) / (now - lastTime));
+                frameCount = 0;
+                lastTime = now;
+            }
+
+            let hasChanges = false;
+
+            // 1. 逻辑更新 (Lerp)
+            hasChanges = updateAnimations();
+
+            // 2. 如果有变化或需要布局更新，则重新计算和绘制
+            if (hasChanges || needsLayoutUpdate || isAnimating) {
+                calculatePathSegments();
+                draw();
+                needsLayoutUpdate = false;
+
+                if (!hasChanges && !needsLayoutUpdate) {
+                    isAnimating = false; // 停止动画
+                }
+            }
+
+            requestAnimationFrame(animationLoop);
+        }
+
+        // 修改 updateAnimations 函数以返回是否有变化
+        function updateAnimations() {
+            const speed = CONFIG.ANIMATION_SPEED;
+            let hasChanges = false;
+
+            // 如果正在缩放路径
+            // (这里可以是更复杂的路径动画，暂且跳过，专注于事件透明度)
+
+            events.forEach(event => {
+                let target = {
+                    dot: {
+                        opacity: 0,
+                        scale: 0
+                    },
+                    panel: {
+                        opacity: 0,
+                        scale: 0
+                    },
+                    deleteBtn: {
+                        opacity: 0,
+                        scale: 0
+                    }
+                }
+
+                if (event.displayMode === 'full') {
+                    target.dot.opacity = 1;
+                    target.dot.scale = 1;
+                    target.panel.opacity = 1;
+                    target.panel.scale = 1;
+                } else if (event.displayMode === 'dot') {
+                    target.dot.opacity = 1;
+                    target.dot.scale = 0.5;
+                }
+
+                if (event == hoveringEvent) {
+                    target.dot.opacity = 1;
+                    target.dot.scale = 1.1;
+                    target.panel.opacity = 1;
+                    target.panel.scale = 1.1;
+                    target.deleteBtn.opacity = 1;
+                    target.deleteBtn.scale = 1.1;
+                }
+
+                // Lerp
+                if (Math.abs(target.dot.opacity - event.animState.dot.opacity) > CONFIG.SCALE_THRESHOLD) {
+                    event.animState.dot.opacity += (target.dot.opacity - event.animState.dot.opacity) * speed;
+                    hasChanges = true;
+                } else {
+                    if (event.animState.dot.opacity !== target.dot.opacity) {
+                        event.animState.dot.opacity = target.dot.opacity;
+                        hasChanges = true;
+                    }
+                }
+                if (Math.abs(target.dot.scale - event.animState.dot.scale) > CONFIG.SCALE_THRESHOLD) {
+                    event.animState.dot.scale += (target.dot.scale - event.animState.dot.scale) * speed;
+                    hasChanges = true;
+                } else {
+                    if (event.animState.dot.scale !== target.dot.scale) {
+                        event.animState.dot.scale = target.dot.scale;
+                        hasChanges = true;
+                    }
+                }
+
+                if (Math.abs(target.panel.opacity - event.animState.panel.opacity) > CONFIG.SCALE_THRESHOLD) {
+                    event.animState.panel.opacity += (target.panel.opacity - event.animState.panel.opacity) * speed;
+                    hasChanges = true;
+                } else {
+                    if (event.animState.panel.opacity !== target.panel.opacity) {
+                        event.animState.panel.opacity = target.panel.opacity;
+                        hasChanges = true;
+                    }
+                }
+                if (Math.abs(target.panel.scale - event.animState.panel.scale) > CONFIG.SCALE_THRESHOLD) {
+                    event.animState.panel.scale += (target.panel.scale - event.animState.panel.scale) * speed;
+                    hasChanges = true;
+                } else {
+                    if (event.animState.panel.scale !== target.panel.scale) {
+                        event.animState.panel.scale = target.panel.scale;
+                        hasChanges = true;
+                    }
+                }
+
+                if (Math.abs(target.deleteBtn.opacity - event.animState.deleteBtn.opacity) > CONFIG.SCALE_THRESHOLD) {
+                    event.animState.deleteBtn.opacity += (target.deleteBtn.opacity - event.animState.deleteBtn.opacity) * speed;
+                    hasChanges = true;
+                } else {
+                    if (event.animState.deleteBtn.opacity !== target.deleteBtn.opacity) {
+                        event.animState.deleteBtn.opacity = target.deleteBtn.opacity;
+                        hasChanges = true;
+                    }
+                }
+                if (Math.abs(target.deleteBtn.scale - event.animState.deleteBtn.scale) > CONFIG.SCALE_THRESHOLD) {
+                    event.animState.deleteBtn.scale += (target.deleteBtn.scale - event.animState.deleteBtn.scale) * speed;
+                    hasChanges = true;
+                } else {
+                    if (event.animState.deleteBtn.scale !== target.deleteBtn.scale) {
+                        event.animState.deleteBtn.scale = target.deleteBtn.scale;
+                        hasChanges = true;
+                    }
                 }
             });
-        });
+
+            return hasChanges;
+        }
+
+        function calculatePathSegments() {
+            const w = canvas.clientWidth;
+            const h = canvas.clientHeight;
+
+            pathSegments = [];
+            totalPathLength = 0;
+
+            const radius = CONFIG.BASE_ROW_HEIGHT / 2;
+            const lineStartX = CONFIG.MARGIN + radius;
+            const lineEndX = w - CONFIG.MARGIN - radius;
+            const lineLength = lineEndX - lineStartX;
+            const arcLength = Math.PI * radius;
+
+            if (lineLength <= 0) return;
+
+            setMostLikeTargetLength();
+
+            const lengthPerRow = lineLength + arcLength;
+            const numRows = (lengthPerRow > 0) ? Math.ceil(currentTargetLength / lengthPerRow) : 1;
+
+            // 简化起始Y坐标计算，直接使用TOP_MARGIN
+            const startY = CONFIG.TOP_MARGIN + radius;
+
+            let y = startY;
+            let direction = 1;
+
+            // 允许路径无限延伸，不再受画布底部限制
+            while (totalPathLength < currentTargetLength) {
+                const remainingLength = currentTargetLength - totalPathLength;
+
+                const lineDrawLength = Math.min(lineLength, remainingLength);
+                if (lineDrawLength <= 0) break;
+
+                let startX, endX;
+                if (direction > 0) {
+                    startX = lineStartX;
+                    endX = lineStartX + lineDrawLength;
+                } else {
+                    startX = lineEndX;
+                    endX = lineEndX - lineDrawLength;
+                }
+
+                pathSegments.push({
+                    type: 'line',
+                    x1: startX, y1: y,
+                    x2: endX, y2: y,
+                    length: lineDrawLength,
+                    startLength: totalPathLength
+                });
+                totalPathLength += lineDrawLength;
+
+                if (totalPathLength >= currentTargetLength) break;
+
+                const arcRemainingLength = currentTargetLength - totalPathLength;
+                const arcDrawLength = Math.min(arcLength, arcRemainingLength);
+                if (arcDrawLength <= 0) break;
+
+                let arcCenter, startAngle, endAngle, anticlockwise;
+                const anglePercent = arcDrawLength / arcLength;
+
+                if (direction > 0) {
+                    arcCenter = [w - CONFIG.MARGIN - radius, y + radius];
+                    startAngle = -Math.PI / 2;
+                    endAngle = startAngle + (Math.PI * anglePercent);
+                    anticlockwise = false;
+                } else {
+                    arcCenter = [CONFIG.MARGIN + radius, y + radius];
+                    startAngle = -Math.PI / 2;
+                    endAngle = startAngle - (Math.PI * anglePercent);
+                    anticlockwise = true;
+                }
+
+                pathSegments.push({
+                    type: 'arc',
+                    cx: arcCenter[0], cy: arcCenter[1],
+                    radius: radius,
+                    startAngle: startAngle,
+                    endAngle: endAngle,
+                    anticlockwise: anticlockwise,
+                    length: arcDrawLength,
+                    startLength: totalPathLength
+                });
+                totalPathLength += arcDrawLength;
+
+                if (totalPathLength >= currentTargetLength) break;
+
+                y += CONFIG.BASE_ROW_HEIGHT;
+                direction *= -1;
+            }
+        }
+
+        // ========================================================================
+        // 绘图
+        // ========================================================================
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+
+            // 应用滚动变换
+            ctx.save();
+            ctx.translate(0, -scrollY);
+
+            drawTimelinePath();
+
+            // 1. 布局计算 (每一帧都重新计算，因为线长可能在变)
+            processEventsLayout();
+
+            // 2. 绘制"今天"
+            drawTodayMarker();
+
+            // 3. 绘制悬停指示器
+            drawTimelineHoverIndicator();
+
+            // 4. 绘制事件 (使用动画属性渲染)
+            renderEvents();
+
+            ctx.restore();
+
+            // 5. 调试信息
+            if (DEBUG.ENABLED && DEBUG.SHOW_FPS) {
+                ctx.save();
+                ctx.font = '12px Arial';
+                ctx.fillStyle = 'red';
+                ctx.fillText(`FPS: ${fps}`, 10, 20);
+                ctx.fillText(`Events: ${events.length}`, 10, 35);
+                ctx.fillText(`Path Segments: ${pathSegments.length}`, 10, 50);
+                ctx.fillText(`ScrollY: ${scrollY.toFixed(2)}`, 10, 65);
+                ctx.fillText(`Canvas H: ${canvas.clientHeight}`, 10, 80);
+                ctx.restore();
+            }
+        }
+
+        function drawTimelinePath() {
+            ctx.save();
+            ctx.lineWidth = CONFIG.LINE_WIDTH;
+            ctx.lineCap = 'round';
+
+            if (minTime >= maxTime || totalPathLength === 0) {
+                ctx.beginPath();
+                ctx.strokeStyle = CONFIG.LINE_COLOR;
+                for (const segment of pathSegments) {
+                    if (segment.type === 'line') {
+                        ctx.moveTo(segment.x1, segment.y1);
+                        ctx.lineTo(segment.x2, segment.y2);
+                    } else if (segment.type === 'arc') {
+                        ctx.arc(segment.cx, segment.cy, segment.radius, segment.startAngle, segment.endAngle, segment.anticlockwise);
+                    }
+                }
+                ctx.stroke();
+                drawEndArrow(CONFIG.LINE_COLOR);
+                ctx.restore();
+                return;
+            }
+
+            const startDate = new Date(minTime);
+            let currentDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+
+            while (currentDate.getTime() < maxTime) {
+                const month = currentDate.getMonth();
+                const color = CONFIG.MONTH_COLORS[month];
+
+                const startTime = Math.max(currentDate.getTime(), minTime);
+                let nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+                const endTime = Math.min(nextMonth.getTime(), maxTime);
+
+                drawPathSegmentForTimeRange(startTime, endTime, color);
+
+                currentDate = nextMonth;
+                if (endTime === maxTime) break;
+            }
+
+            if (pathSegments.length > 0) {
+                const lastDate = new Date(maxTime);
+                const arrowColor = CONFIG.MONTH_COLORS[lastDate.getMonth()] || CONFIG.LINE_COLOR;
+                drawEndArrow(arrowColor);
+            }
+
+            ctx.restore();
+        }
+
+        function drawPathSegmentForTimeRange(startTime, endTime, color) {
+            if (startTime >= endTime) return;
+            const timeRange = maxTime - minTime;
+            if (timeRange <= 0) return;
+
+            const startPercent = (startTime - minTime) / timeRange;
+            const endPercent = (endTime - minTime) / timeRange;
+
+            const startDist = startPercent * totalPathLength;
+            const endDist = endPercent * totalPathLength;
+
+            if (startDist >= endDist) return;
+
+            ctx.strokeStyle = color;
+
+            for (const segment of pathSegments) {
+                const segStart = segment.startLength;
+                const segEnd = segStart + segment.length;
+
+                const drawStart = Math.max(startDist, segStart);
+                const drawEnd = Math.min(endDist, segEnd);
+
+                if (drawStart < drawEnd && (drawEnd - drawStart > 0.001)) {
+                    ctx.beginPath();
+
+                    if (segment.length <= 0) continue;
+
+                    let percentStart = (drawStart - segStart) / segment.length;
+                    let percentEnd = (drawEnd - segStart) / segment.length;
+                    percentStart = Math.max(0, Math.min(1, percentStart));
+                    percentEnd = Math.max(0, Math.min(1, percentEnd));
+
+                    if (segment.type === 'line') {
+                        const x1 = segment.x1 + (segment.x2 - segment.x1) * percentStart;
+                        const y1 = segment.y1;
+                        const x2 = segment.x1 + (segment.x2 - segment.x1) * percentEnd;
+                        const y2 = segment.y1;
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                    } else if (segment.type === 'arc') {
+                        const angleStart = segment.startAngle + (segment.endAngle - segment.startAngle) * percentStart;
+                        const angleEnd = segment.startAngle + (segment.endAngle - segment.startAngle) * percentEnd;
+                        if (Math.abs(angleStart - angleEnd) > 0.0001) {
+                            ctx.arc(segment.cx, segment.cy, segment.radius, angleStart, angleEnd, segment.anticlockwise);
+                        }
+                    }
+                    ctx.stroke();
+                }
+            }
+        }
+
+        function drawEndArrow(color) {
+            if (pathSegments.length === 0) return;
+            const lastSeg = pathSegments[pathSegments.length - 1];
+            let x, y, angle;
+
+            if (lastSeg.type === 'line') {
+                x = lastSeg.x2;
+                y = lastSeg.y2;
+                angle = (lastSeg.x2 > lastSeg.x1) ? 0 : Math.PI;
+            } else {
+                x = lastSeg.cx + lastSeg.radius * Math.cos(lastSeg.endAngle);
+                y = lastSeg.cy + lastSeg.radius * Math.sin(lastSeg.endAngle);
+                angle = lastSeg.endAngle + (lastSeg.anticlockwise ? -Math.PI/2 : Math.PI/2);
+            }
+
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-CONFIG.ARROW_INDENT, CONFIG.ARROW_HEAD_WIDTH / 2);
+            ctx.lineTo(CONFIG.ARROW_HEAD_LENGTH, 0);
+            ctx.lineTo(-CONFIG.ARROW_INDENT, -CONFIG.ARROW_HEAD_WIDTH / 2);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawTodayMarker() {
+            const todayTimestamp = new Date().getTime();
+            if (todayTimestamp < minTime || todayTimestamp > maxTime || totalPathLength === 0) return;
+            const timeRange = maxTime - minTime;
+            if (timeRange <= 0) return;
+            const timePercent = (todayTimestamp - minTime) / timeRange;
+            const distance = timePercent * totalPathLength;
+            const coords = getCoordsAtDistance(distance);
+            if (!coords) return;
+
+            // 绘制垂直虚线，只在时间轴上下各延伸 CONFIG.TODAY_MARKER_LENGTH
+            ctx.save();
+
+            ctx.beginPath();
+            ctx.setLineDash([3, 3]); // 设置虚线样式
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#FF0000'; // 红色
+
+            // 根据路径切线角度计算垂直方向
+            const angle = coords.angle;
+            const perpAngle = angle + Math.PI / 2; // 垂直于路径的方向
+
+            // 计算线段的起点和终点
+            const startX = coords.x + Math.cos(perpAngle) * CONFIG.TODAY_MARKER_LENGTH;
+            const startY = coords.y + Math.sin(perpAngle) * CONFIG.TODAY_MARKER_LENGTH;
+            const endX = coords.x - Math.cos(perpAngle) * CONFIG.TODAY_MARKER_LENGTH;
+            const endY = coords.y - Math.sin(perpAngle) * CONFIG.TODAY_MARKER_LENGTH;
+
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function drawTimelineHoverIndicator() {
+            if (!hoverTarget) return;
+            if (!currentMousePos) return;
+            if (hoverTarget.type !== 'path') return;
+
+            // 使用当前鼠标位置（无需手动调整，已由外层translate处理）
+            const currentTime = getTimeAtCoords(currentMousePos.x, currentMousePos.y);
+            const timePercent = (currentTime - minTime) / (maxTime - minTime);
+            const distance = timePercent * totalPathLength;
+            const coords = getCoordsAtDistance(distance);
+            if (!coords) return;
+
+            // 绘制悬停指示器（小圆圈）
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgb(255, 0, 0)';
+            ctx.lineWidth = 1;
+            ctx.arc(coords.x, coords.y, CONFIG.LINE_WIDTH, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.arc(coords.x, coords.y, CONFIG.LINE_WIDTH - 2, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.arc(coords.x, coords.y, CONFIG.LINE_WIDTH - 4, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // ========================================================================
+        // 绘制事件 (碰撞检测 + 智能布局)
+        // ========================================================================
+
+        function processEventsLayout() {
+            if (minTime >= maxTime || totalPathLength === 0) return;
+
+            // 检查是否可以从缓存中获取布局
+            const cacheKey = `${minTime}-${maxTime}-${totalPathLength}-${events.length}`;
+            if (cachedEventLayouts.has(cacheKey) && !needsLayoutUpdate) {
+                // 使用缓存的布局
+                const cachedLayout = cachedEventLayouts.get(cacheKey);
+                events.forEach((event, index) => {
+                    const animState = event.animState;
+                    Object.assign(event, cachedLayout[index]);
+                    event.animState = animState;
+                });
+                return;
+            }
+
+            let drawnRects = [];
+
+            // 1. 基础计算
+            events.forEach((event, index) => {
+                updateEventCoordinates(event);
+                event.timeIndex = index;
+                event.displayMode = 'hidden';
+                calculateEventBBoxes(event, index % 2 === 0);
+            });
+
+            // 2. 智能布局
+            const sortedEvents = [...events].sort((a, b) => a.priority - b.priority);
+
+            for (const event of sortedEvents) {
+                const preferredIsAbove = (event.timeIndex % 2 === 0);
+
+                calculateEventBBoxes(event, preferredIsAbove);
+                let potRect = event.bboxes.background;
+                let isColliding = drawnRects.some(rect => isOverlapping(rect, potRect));
+
+                if (isColliding) {
+                    calculateEventBBoxes(event, !preferredIsAbove);
+                    potRect = event.bboxes.background;
+                    isColliding = drawnRects.some(rect => isOverlapping(rect, potRect));
+                }
+
+                if (isColliding) {
+                    event.displayMode = 'dot';
+                    calculateEventBBoxes(event, preferredIsAbove);
+                } else {
+                    event.displayMode = 'full';
+                    drawnRects.push(potRect);
+                }
+            }
+
+            // 缓存布局结果
+            cachedEventLayouts.set(cacheKey, JSON.parse(JSON.stringify(events)));
+            needsLayoutUpdate = false; // 重置标记
+        }
+
+        function renderEvents() {
+            if (minTime >= maxTime || totalPathLength === 0) return;
+
+            // 层级 1: 非悬停
+            for (const event of events) {
+                if (hoveringEvent === event) continue;
+                drawAnimatedEvent(event);
+            }
+
+            // 层级 2: 悬停
+            if (hoveringEvent) {
+                drawAnimatedEvent(hoveringEvent);
+            }
+        }
+
+        /**
+         * (新增) 通用绘制函数，处理透明度和缩放
+         */
+        function drawAnimatedEvent(event) {
+            drawNode(event);
+            drawEventPanel(event);
+
+            // 只有在完全悬停且不透明时显示删除按钮
+            if (hoveringEvent === event) {
+                drawDeleteButton(event);
+            }
+            // 移除了此处的 ctx.restore()，因为它与外层的 save/restore 不匹配
+        }
+
+        function updateEventCoordinates(event) {
+            if (minTime >= maxTime || totalPathLength === 0) return;
+            const timeRange = maxTime - minTime;
+            if (timeRange <= 0) return;
+            const timePercent = (event.timestamp - minTime) / timeRange;
+            const distance = timePercent * totalPathLength;
+            const coords = getCoordsAtDistance(distance);
+
+            if (coords) {
+                event.x = coords.x;
+                event.y = coords.y;
+                event.angle = coords.angle;
+                event.segmentType = coords.segmentType;
+            } else {
+                event.x = 0;
+                event.y = 0;
+                event.segmentType = 'line';
+            }
+        }
+
+        function isOverlapping(rect1, rect2) {
+            if (!rect1 || !rect2) return false;
+            return !(
+                rect1.x + rect1.w < rect2.x ||
+                rect2.x + rect2.w < rect1.x ||
+                rect1.y + rect1.h < rect2.y ||
+                rect2.y + rect2.h < rect1.y
+            );
+        }
+
+        function drawNode(event) {
+            if (event.animState.dot.opacity < CONFIG.OPACITY_THRESHOLD) return;
+            ctx.save();
+            ctx.globalAlpha = event.animState.dot.opacity;
+            // 设置变换中心为节点位置，考虑滚动偏移量
+            ctx.translate(event.x, event.y);
+            ctx.scale(event.animState.dot.scale, event.animState.dot.scale);
+            ctx.translate(-event.x, -event.y);
+
+            if (hoveringEvent === event) {
+                ctx.shadowColor = CONFIG.PRIORITY_COLORS[event.priority];
+                ctx.shadowBlur = CONFIG.NODE_RADIUS + 5;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+            }
+
+            ctx.beginPath();
+            ctx.fillStyle = '#FFFFFF';
+            ctx.arc(event.x, event.y, CONFIG.NODE_RADIUS + 1, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.fillStyle = CONFIG.NODE_COLOR;
+            ctx.arc(event.x, event.y, CONFIG.NODE_RADIUS, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.fillStyle = CONFIG.PRIORITY_COLORS[event.priority];
+            ctx.arc(event.x, event.y, CONFIG.NODE_RADIUS - 1, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawEventPanel(event) {
+            if (event.animState.panel.opacity < CONFIG.OPACITY_THRESHOLD) return;
+            const bgBox = event.bboxes.background;
+            if (!bgBox) return;
+            ctx.save();
+            ctx.globalAlpha = event.animState.panel.opacity;
+            // 设置变换中心为节点位置，考虑滚动偏移量
+            ctx.translate(event.x, event.y);
+            ctx.scale(event.animState.panel.scale, event.animState.panel.scale);
+            ctx.translate(-event.x, -event.y);
+
+            ctx.beginPath();
+            const collisionPadding = 4;
+            if (ctx.roundRect) {
+                const x = bgBox.x + collisionPadding;
+                const y = bgBox.y + collisionPadding;
+                const w = bgBox.w - collisionPadding * 2;
+                const h = bgBox.h - collisionPadding * 2;
+                ctx.roundRect(x, y, w, h, 10);
+            } else {
+                ctx.rect(bgBox.x, bgBox.y, bgBox.w, bgBox.h);
+            }
+            ctx.clip();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+            ctx.fillRect(bgBox.x, bgBox.y, bgBox.w, bgBox.h);
+
+            // 在圆角矩形内部绘制5px宽的优先级颜色条
+            // ctx.fillStyle = CONFIG.PRIORITY_COLORS[event.priority] || CONFIG.PRIORITY_COLORS[5];
+            // ctx.fillRect(bgBox.x, bgBox.y, collisionPadding + 5, bgBox.h);
+
+            const descBox = event.bboxes.description;
+            const dateBox = event.bboxes.date;
+            if (!descBox || !dateBox) return;
+            ctx.fillStyle = CONFIG.TEXT_COLOR;
+            ctx.font = `bold ${CONFIG.FONT_SIZE}px Inter`;
+            ctx.fillText(descBox.text, descBox.x, descBox.y + descBox.h);
+            ctx.fillStyle = CONFIG.TEXT_COLOR_LIGHT;
+            ctx.font = `${CONFIG.FONT_SIZE_SMALL}px Inter`;
+            ctx.fillText(dateBox.text, dateBox.x, dateBox.y + dateBox.h);
+
+            ctx.restore();
+        }
+
+        function drawDeleteButton(event) {
+            if (event.animState.deleteBtn.opacity < CONFIG.OPACITY_THRESHOLD) return;
+            const isHovering = (hoveringEvent === event);
+            if (!isHovering) return; // 只在悬停时显示删除按钮
+            if (!event.bboxes || !event.bboxes.background) return;
+            const bgBox = event.bboxes.background;
+            const deleteBtnX = bgBox.x + bgBox.w - 4;
+            const deleteBtnY = bgBox.y + 4;
+
+            const deleteBtnPos = { x: deleteBtnX, y: deleteBtnY };
+            event.deleteButtonPos = deleteBtnPos;
+
+            ctx.save();
+            ctx.globalAlpha = event.animState.deleteBtn.opacity;
+            // 应用缩放变换
+            ctx.translate(deleteBtnPos.x, deleteBtnPos.y);
+            ctx.scale(event.animState.deleteBtn.scale, event.animState.deleteBtn.scale);
+            ctx.translate(-deleteBtnPos.x, -deleteBtnPos.y);
+
+            ctx.beginPath();
+            ctx.fillStyle = (hoveringDeleteButton && isHovering) ? CONFIG.HOVER_DELETE_BUTTON_COLOR : CONFIG.DELETE_BUTTON_COLOR;
+            // 绘制圆圈时考虑滚动偏移
+            ctx.arc(deleteBtnPos.x, deleteBtnPos.y - scrollY, CONFIG.DELETE_BUTTON_RADIUS, 0, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            const xOff = CONFIG.DELETE_BUTTON_RADIUS * 0.4;
+            // 绘制叉号时考虑滚动偏移
+            ctx.moveTo(deleteBtnPos.x - xOff, deleteBtnPos.y - scrollY - xOff);
+            ctx.lineTo(deleteBtnPos.x + xOff, deleteBtnPos.y - scrollY + xOff);
+            ctx.moveTo(deleteBtnPos.x + xOff, deleteBtnPos.y - scrollY - xOff);
+            ctx.lineTo(deleteBtnPos.x - xOff, deleteBtnPos.y - scrollY + xOff);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function calculateEventBBoxes(event, isAbove) {
+            let xOffset = 0;
+            if (event.segmentType === 'arc') {
+                const nodeXFraction = (event.x - CONFIG.MARGIN) / (canvas.clientWidth - CONFIG.MARGIN * 2);
+                if (nodeXFraction < 0.1) {
+                    xOffset = 20;
+                } else if (nodeXFraction > 0.9) {
+                    xOffset = -20;
+                }
+            }
+
+            const x = event.x + xOffset;
+            event.bboxes = {};
+            let maxTextWidth = -Infinity;
+            let minTextX = Infinity;
+
+            ctx.font = `bold ${CONFIG.FONT_SIZE}px Inter`;
+            const descText = event.description;
+            const descMetrics = ctx.measureText(descText);
+
+            ctx.font = `${CONFIG.FONT_SIZE_SMALL}px Inter`;
+            const dateText = (event.dateStr.includes('T') ? event.dateStr.replace('T', ' ') : event.dateStr);
+            const dateMetrics = ctx.measureText(dateText);
+
+            let yDesc, yDate;
+            const gap = 12;
+
+            // 确保上下方事件与时间轴的距离一致
+            if (isAbove) {
+                const bottomY = event.y - CONFIG.NODE_RADIUS - gap;
+                yDate = bottomY - CONFIG.FONT_SIZE_SMALL;
+                yDesc = yDate - 4 - CONFIG.FONT_SIZE;
+            } else {
+                const topY = event.y + CONFIG.NODE_RADIUS + gap;
+                yDesc = topY + CONFIG.FONT_SIZE;
+                yDate = yDesc + 4 + CONFIG.FONT_SIZE_SMALL;
+            }
+
+            const xDesc = x - descMetrics.width / 2;
+            event.bboxes.description = {
+                x: xDesc,
+                y: isAbove ? yDesc : yDesc - CONFIG.FONT_SIZE,
+                w: descMetrics.width,
+                h: CONFIG.FONT_SIZE,
+                text: descText
+            };
+            maxTextWidth = Math.max(maxTextWidth, xDesc + descMetrics.width);
+            minTextX = Math.min(minTextX, xDesc);
+
+            const xDate = x - dateMetrics.width / 2;
+            event.bboxes.date = {
+                x: xDate,
+                y: isAbove ? yDate : yDate - CONFIG.FONT_SIZE_SMALL,
+                w: dateMetrics.width,
+                h: CONFIG.FONT_SIZE_SMALL,
+                text: dateText
+            };
+            maxTextWidth = Math.max(maxTextWidth, xDate + dateMetrics.width);
+            minTextX = Math.min(minTextX, xDate);
+
+            event.maxTextX = maxTextWidth;
+            event.minTextX = minTextX;
+
+            const padding = 8;
+            const bgX = event.minTextX - padding;
+            const bgY = event.bboxes.description.y - padding;
+            const bgW = (event.maxTextX - event.minTextX) + padding * 2;
+            const bottomTextY = Math.max(event.bboxes.description.y + event.bboxes.description.h, event.bboxes.date.y + event.bboxes.date.h);
+            const bgH = (bottomTextY - bgY) + padding;
+
+            const collisionPadding = 4;
+            event.bboxes.background = {
+                x: bgX - collisionPadding,
+                y: bgY - collisionPadding,
+                w: bgW + collisionPadding * 2,
+                h: bgH + collisionPadding * 2
+            };
+        }
+
+        // ========================================================================
+        // 坐标计算
+        // ========================================================================
+
+        function getCoordsAtDistance(distance) {
+            if (typeof distance !== 'number' || isNaN(distance)) {
+                return null;
+            }
+            let segment = null;
+            for (let i = pathSegments.length - 1;i >= 0;i--) {
+                if (distance >= pathSegments[i].startLength) {
+                    segment = pathSegments[i];
+                    break;
+                }
+            }
+            if (!segment) {
+                if (pathSegments.length > 0) {
+                    const firstSeg = pathSegments[0];
+                    if (firstSeg.type === 'line') {
+                        return { x: firstSeg.x1, y: firstSeg.y1, angle: (firstSeg.x2 > firstSeg.x1) ? 0 : Math.PI, segmentType: 'line' };
+                    } else if (firstSeg.type === 'arc') {
+                        const angle = firstSeg.startAngle;
+                        const x = firstSeg.cx + firstSeg.radius * Math.cos(angle);
+                        const y = firstSeg.cy + firstSeg.radius * Math.sin(angle);
+                        return { x: x, y: y, angle: angle + (Math.PI / 2), segmentType: 'arc' };
+                    }
+                }
+                return null;
+            }
+
+            const distanceInSegment = distance - segment.startLength;
+
+            if (segment.type === 'line') {
+                const percent = (segment.length === 0) ? 0 : (distanceInSegment / segment.length);
+                const clampedPercent = Math.max(0, Math.min(1, percent));
+                const x = segment.x1 + (segment.x2 - segment.x1) * clampedPercent;
+                const y = segment.y1;
+                const angle = (segment.x2 > segment.x1) ? 0 : Math.PI;
+                return { x, y, angle, segmentType: 'line' };
+
+            } else if (segment.type === 'arc') {
+                const anglePercent = (segment.length === 0) ? 0 : (distanceInSegment / segment.length);
+                const clampedPercent = Math.max(0, Math.min(1, anglePercent));
+                const angle = segment.startAngle + (segment.endAngle - segment.startAngle) * clampedPercent;
+
+                const x = segment.cx + segment.radius * Math.cos(angle);
+                const y = segment.cy + segment.radius * Math.sin(angle);
+
+                let tangentAngle = angle + (Math.PI / 2);
+                if (segment.anticlockwise) {
+                     tangentAngle = angle - (Math.PI / 2);
+                }
+                return { x, y, angle: tangentAngle, segmentType: 'arc' };
+            }
+            return null;
+        }
+
+        function getTimeAtCoords(x, y) {
+            // 考虑滚动偏移量
+            const adjustedY = y + scrollY;
+
+            let minDistance = Infinity, bestDistance = 0;
+            for (let d = 0; d < totalPathLength; d += CONFIG.LINE_WIDTH) {
+                const pt = getCoordsAtDistance(d);
+                const dist = (pt.x - x) ** 2 + (pt.y - adjustedY) ** 2;
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    bestDistance = d;
+                }
+            }
+
+            if (minDistance < CONFIG.LINE_WIDTH ** 4) {
+                return minTime + (maxTime - minTime) * (bestDistance / totalPathLength);
+            }
+            return null;
+        }
+
+        // ========================================================================
+        // 数据处理 / 交互
+        // ========================================================================
+
+        function parseAndLoadEvents(data) {
+            try {
+                events = [];
+                const lines = data.split('\n').filter(line => line.trim() !== '');
+                if (lines.length === 0) {
+                    const thisYear = new Date();
+                    thisYear = new Date().setMonth(0, 1)
+                    minTime = thisYear.getTime();
+                    maxTime = new Date(thisYear.getFullYear() + 1, 0, 1).getTime();
+                    resizeCanvas();
+                    return;
+                }
+                let tempMin = Infinity;
+                let tempMax = -Infinity;
+
+                lines.forEach((line, index) => {
+                    try{
+                        const parts = line.trim().split(' ');
+                        if (parts.length < 3) return;
+                        const dateTime = parts[0];
+                        const priority = Math.min(5, parseInt(parts[1], 10));
+                        const description = parts.slice(2).join(' ');
+                        const timestamp = new Date(dateTime.includes('T') ? dateTime : dateTime.replace(' ', 'T')).getTime();
+                        if (isNaN(timestamp)) return;
+
+                        if (timestamp < tempMin) tempMin = timestamp;
+                        if (timestamp > tempMax) tempMax = timestamp;
+
+                        events.push(createEventObject(
+                            `evt_${index}`,
+                            dateTime,
+                            timestamp,
+                            priority,
+                            description
+                        ));
+                    } catch(e){
+                        console.error('解析事件行时出错：', line, e);
+                    }
+                });
+
+                if (tempMin === Infinity) {
+                    minTime = new Date().getTime();
+                    maxTime = minTime + 86400000;
+                } else {
+                    const padding = (tempMax - tempMin) * 0.05 || 86400000;
+                    minTime = tempMin - padding;
+                    maxTime = tempMax + padding;
+                }
+                events.sort((a, b) => a.timestamp - b.timestamp);
+                resizeCanvas();
+                // 确保初始动画
+                startAnimation();
+
+                // 数据加载完成后，确保scrollY为0
+                scrollY = 0;
+            } catch (e) {
+                console.error('解析事件数据时出错：', e);
+                const thisYear = new Date();
+                thisYear = new Date().setMonth(0, 1)
+                minTime = thisYear.getTime();
+                maxTime = new Date(thisYear.getFullYear() + 1, 0, 1).getTime();
+                resizeCanvas();
+            }
+        }
+
+        function formatEventsToString() {
+            return events.sort((a, b) => a.timestamp - b.timestamp).map(e => `${(e.dateStr.includes('T') ? e.dateStr : e.dateStr.replace(' ', 'T'))} ${e.priority} ${e.description}`).join('\n');
+        }
+
+        function saveEventsToFile() {
+            const data = formatEventsToString();
+            const blob = new Blob([data], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'timeline_events.txt';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        function loadEventsFromFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => { parseAndLoadEvents(e.target.result);};
+                reader.readAsText(file);
+            }
+            event.target.value = null;
+        }
+
+        function isPosInEvent(event, x, y) {
+            // 考虑滚动偏移量
+            const adjustedY = y - scrollY;
+
+            // 检查 "完整" 或 "悬停展开" 的事件
+            const isEffectivelyFull = (event.displayMode === 'full') || (event.displayMode === 'dot' && hoveringEvent === event);
+
+            if (isEffectivelyFull) {
+                if (event.deleteButtonPos) {
+                    const dx = x - event.deleteButtonPos.x;
+                    const dy = adjustedY - event.deleteButtonPos.y;
+                    if (Math.sqrt(dx * dx + dy * dy) <= CONFIG.DELETE_BUTTON_RADIUS + 2) return true;
+                }
+                const bgBox = event.bboxes.background;
+                if (bgBox && x >= bgBox.x && x <= bgBox.x + bgBox.w && adjustedY >= bgBox.y && adjustedY <= bgBox.y + bgBox.h) return true;
+                const dx = x - event.x;
+                const dy = adjustedY - event.y;
+                if (Math.sqrt(dx * dx + dy * dy) <= CONFIG.NODE_RADIUS + 5) return true;
+            } else if (event.displayMode === 'dot') {
+                const actualRadius = CONFIG.NODE_RADIUS * (event.animState && event.animState.dot ? event.animState.dot.scale : 1);
+                const dx = x - event.x;
+                const dy = adjustedY - event.y;
+                if (Math.sqrt(dx * dx + dy * dy) <= actualRadius + 5) return true;
+            }
+            return false;
+        }
+
+        function checkHover(x, y) {
+            // 考虑滚动偏移量
+            y += scrollY;
+
+            // 1. 优先检查当前悬停事件
+            if (hoveringEvent) {
+                if (isPosInEvent(hoveringEvent, x, y)) {
+                    if (hoveringEvent.deleteButtonPos) {
+                        const dx = x - hoveringEvent.deleteButtonPos.x;
+                        const dy = y - hoveringEvent.deleteButtonPos.y;
+                        if (Math.sqrt(dx * dx + dy * dy) <= CONFIG.DELETE_BUTTON_RADIUS + 2) {
+                            return { type: 'deleteButton', event: hoveringEvent };
+                        }
+                    }
+                    return { type: 'text', event: hoveringEvent };
+                }
+            }
+
+            // 2. 检查其他事件
+            for (let i = events.length - 1;i >= 0;i--) {
+                const event = events[i];
+                if (event === hoveringEvent) continue;
+
+                if (isPosInEvent(event, x, y)) {
+                    if (event.deleteButtonPos) {
+                        const dx = x - event.deleteButtonPos.x;
+                        const dy = y - event.deleteButtonPos.y;
+                        if (Math.sqrt(dx * dx + dy * dy) <= CONFIG.DELETE_BUTTON_RADIUS + 2) {
+                           return { type: 'deleteButton', event: event };
+                        }
+                    }
+                    if (event.displayMode === 'dot') {
+                        const actualRadius = CONFIG.NODE_RADIUS * (event.animState && event.animState.dot ? event.animState.dot.scale : 1);
+                        const dx = x - event.x;
+                        const dy = y - event.y;
+                        if (Math.sqrt(dx * dx + dy * dy) <= actualRadius + 5) {
+                           return { type: 'node', event: event };
+                        }
+                    }
+                    return { type: 'text', event: event };
+                }
+            }
+
+            // 3. 检查S型路径
+            for (const segment of pathSegments) {
+                if (segment.type === 'line') {
+                    if (Math.abs(y - segment.y1) <= CONFIG.LINE_WIDTH / 2 && x >= CONFIG.MARGIN && x <= canvas.clientWidth - CONFIG.MARGIN) {
+                        return { type: 'path' };
+                    }
+                } else if (segment.type === 'arc') {
+                    const dx = x - segment.cx;
+                    const dy = y - segment.cy;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (Math.abs(dist - segment.radius) <= CONFIG.LINE_WIDTH / 2) {
+                        return { type: 'path' };
+                    }
+                }
+            }
+            return null;
+        }
+
+        function handleCanvasMouseDown(e) {
+            if (e.button === 0) { // 左键
+                isDragging = true;
+                dragStartY = e.clientY;
+                scrollTopStart = scrollY;
+                canvas.style.cursor = 'grabbing';
+                e.preventDefault();
+            }
+        }
+
+        function handleCanvasMouseUp(e) {
+            if (e.button === 0) { // 左键
+                isDragging = false;
+                canvas.style.cursor = hoverTarget ? (hoverTarget.type === 'path' ? 'copy' : 'pointer') : 'default';
+            }
+        }
+
+        function handleWindowMouseMove(e) {
+            if (isDragging) {
+                const deltaY = e.clientY - dragStartY;
+                scrollY = scrollTopStart - deltaY * CONFIG.DRAG_SPEED;
+                // 限制滚动范围
+                scrollY = Math.max(0, scrollY);
+                startAnimation();
+            }
+        }
+
+        function handleCanvasWheel(e) {
+            scrollY += e.deltaY * 0.5; // 调整滚动速度
+            // 限制滚动范围
+            scrollY = Math.max(0, scrollY);
+            startAnimation();
+            e.preventDefault();
+        }
+
+        function handleCanvasMouseMove(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const target = checkHover(x, y);
+
+            if ((hoverTarget && hoverTarget.type === 'path' && !target)
+                || (target && hoverTarget && hoverTarget.type !== target.type)
+                || (target && target.type === 'path' && (currentMousePos.x !== x || currentMousePos.y !== y))) {
+                isAnimating = true;
+            }
+
+            hoverTarget = target;
+            currentMousePos = { x, y };
+            hoveringDeleteButton = (hoverTarget && hoverTarget.type === 'deleteButton');
+
+            if (hoverTimer) {
+                clearTimeout(hoverTimer);
+                hoverTimer = null;
+            }
+
+            if (hoverTarget) {
+                canvas.style.cursor = (hoverTarget.type === 'path') ? 'copy' : 'pointer';
+                const newHoverEvent = hoverTarget.event || null;
+
+                if (hoveringEvent !== newHoverEvent) {
+                    hoveringEvent = newHoverEvent;
+                    isAnimating = true; // 只在悬停事件变化时触发动画
+                } else if (hoverTarget.type === 'deleteButton' || hoveringDeleteButton) {
+                    isAnimating = true; // 在删除按钮状态变化时触发动画
+                }
+            } else {
+                canvas.style.cursor = 'default';
+                const wasHoveringDeleteButton = hoveringDeleteButton;
+                hoveringDeleteButton = false;
+
+                if (hoveringEvent) {
+                    hoverTimer = setTimeout(() => {
+                        hoveringEvent = null;
+                        hoverTimer = null;
+                    }, CONFIG.HOVER_DELAY);
+                }
+            }
+        }
+
+        function handleCanvasMouseLeave() {
+            if (!isDragging) {
+                if (hoveringEvent) { hoveringEvent = null; }
+                if (hoveringDeleteButton) { hoveringDeleteButton = false; }
+                if (hoverTimer) { clearTimeout(hoverTimer);hoverTimer = null; }
+            }
+        }
+
+        function handleCanvasClick(e) {
+            if (isDragging) {
+                isDragging = false;
+                canvas.style.cursor = hoverTarget ? (hoverTarget.type === 'path' ? 'copy' : 'pointer') : 'default';
+                return;
+            }
+
+            if (hoverTarget) {
+                if (hoverTarget.type === 'deleteButton') {
+                    if (window.confirm(`确定要删除事件 "${hoverTarget.event.description}" 吗？`)) {
+                        deleteEvent(hoverTarget.event);
+                    }
+                } else if (hoverTarget.event) {
+                    editingEvent = hoverTarget.event;
+                    editingType = 'edit';
+                    openModal();
+                } else if (hoverTarget.type === 'path') {
+                    // 考虑滚动偏移量
+                    const adjustedY = currentMousePos.y + scrollY;
+                    editingEvent = {
+                        timestamp: getTimeAtCoords(currentMousePos.x, adjustedY),
+                        priority: 5,
+                        description: ""
+                    };
+                    editingType = 'add';
+                    openModal();
+                }
+            }
+        }
+
+        function openModal() {
+            if (!editingEvent) return;
+            if (editingType === 'add') {
+                modalTitle.textContent = "添加新事件";
+                eventDateInput.value = toLocalISOString(new Date(editingEvent.timestamp));
+                eventPriorityInput.value = 2; // 默认中等
+                eventDescriptionInput.value = "";
+            } else {
+                modalTitle.textContent = "编辑事件";
+                eventDateInput.value = toLocalISOString(new Date(editingEvent.timestamp));
+                eventPriorityInput.value = editingEvent.priority;
+                eventDescriptionInput.value = editingEvent.description;
+            }
+            // 手动触发一次 change 事件来设置初始颜色
+            eventPriorityInput.dispatchEvent(new Event('change'));
+
+            eventModal.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+            setTimeout(() => eventDescriptionInput.focus(), 100);
+        }
+
+        function closeModal() {
+            eventModal.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+            editingEvent = null;
+        }
+
+        function handleSaveEvent(e) {
+            e.preventDefault();
+            if (!editingEvent) return;
+
+            const newDateStr = eventDateInput.value;
+            const newTimestamp = new Date(newDateStr).getTime();
+            const newPriority = parseInt(eventPriorityInput.value, 10);
+            const newDescription = eventDescriptionInput.value;
+
+            // 验证输入
+            if (!newDateStr) {
+                showError("请输入日期和时间");
+                return;
+            }
+
+            if (isNaN(newTimestamp)) {
+                showError("请输入有效的日期和时间");
+                return;
+            }
+
+            if (isNaN(newPriority) || newPriority < 0 || newPriority > 5) {
+                showError("优先级必须是0-5之间的数字");
+                return;
+            }
+
+            if (!newDescription) {
+                showError("请输入事件描述");
+                return;
+            }
+
+            if (editingType === 'add') {
+                const newEvent = createEventObject(
+                    `evt_${events.length}`,
+                    newDateStr,
+                    newTimestamp,
+                    newPriority,
+                    newDescription
+                );
+                events.push(newEvent);
+            } else {
+                editingEvent.dateStr = newDateStr;
+                editingEvent.timestamp = newTimestamp;
+                editingEvent.priority = newPriority;
+                editingEvent.description = newDescription;
+            }
+
+            updateDataAndRedraw();
+            closeModal();
+
+            cachedEventLayouts.clear();
+            needsLayoutUpdate = true;
+            startAnimation();
+        }
+
+        function deleteEvent(eventToDelete) {
+            events = events.filter(e => e.id !== eventToDelete.id);
+            hoveringEvent = null;
+            hoveringDeleteButton = false;
+
+            eventToDelete.bboxes = null;
+            eventToDelete.deleteButtonPos = null;
+
+            updateDataAndRedraw();
+            cachedEventLayouts.clear();
+            needsLayoutUpdate = true;
+        }
+
+        function updateDataAndRedraw() {
+            if (events.length === 0) {
+                let thisYear = new Date();
+                minTime = thisYear().setMonth(0, 1).getTime();
+                maxTime = new Date(thisYear.getFullYear() + 1, 0, 1).getTime();
+            } else {
+                let tempMin = Infinity;
+                let tempMax = -Infinity;
+                events.forEach(e => {
+                    if (e.timestamp < tempMin) tempMin = e.timestamp;
+                    if (e.timestamp > tempMax) tempMax = e.timestamp;
+                });
+                if (tempMin === tempMax) {
+                    minTime = tempMin - 86400000;
+                    maxTime = tempMax + 86400000;
+                } else {
+                    const padding = (tempMax - tempMin) * 0.05 || 86400000;
+                    minTime = tempMin - padding;
+                    maxTime = tempMax + padding;
+                }
+            }
+            events.sort((a, b) => a.timestamp - b.timestamp);
+            resizeCanvas();
+        }
+
+        function toLocalISOString(date) {
+            const tzOffset = date.getTimezoneOffset() * 60000;
+            const localDate = new Date(date.getTime() - tzOffset);
+            return localDate.toISOString().slice(0, 19);
+        }
+
+        // 添加错误显示函数
+        function showError(message) {
+            // 创建或更新错误消息元素
+            let errorElement = document.getElementById('formError');
+            if (!errorElement) {
+                errorElement = document.createElement('div');
+                errorElement.id = 'formError';
+                errorElement.className = 'text-red-500 text-sm mt-2';
+                eventForm.appendChild(errorElement);
+            }
+            errorElement.textContent = message;
+
+            // 3秒后自动清除错误消息
+            setTimeout(() => {
+                if (errorElement.parentNode) {
+                    errorElement.parentNode.removeChild(errorElement);
+                }
+            }, 3000);
+        }
+
+        init();
     </script>
 </body>
-
 </html>
